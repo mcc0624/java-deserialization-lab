@@ -98,6 +98,10 @@ COPY --from=builder /build/class18-cc5/target/class18.war /usr/local/tomcat/weba
 COPY --from=builder /build/class19-cc6/target/class19.war /usr/local/tomcat/webapps/class19.war
 COPY --from=builder /build/class20-cc7/target/class20.war /usr/local/tomcat/webapps/class20.war
 
+# 创建 ROOT webapp 作为首页（无需 Apache 反向代理）
+RUN mkdir /usr/local/tomcat/webapps/ROOT
+COPY landing/index.html /usr/local/tomcat/webapps/ROOT/index.html
+
 # 启用 TemplatesImpl 反序列化
 ENV CATALINA_OPTS="-Djdk.xml.enableTemplatesImplDeserialization=true"
 
