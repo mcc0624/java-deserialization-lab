@@ -1,0 +1,33 @@
+# Maven build output
+target/
+*.war
+*.class
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Serialized payloads
+*.ser
+
+# JAR files
+*.jar
+
+# Upload directory
+upload/
+
+# Docker generated
+docker-compose.student.yml
+
+# Maven local repo (keep settings.xml though)
+.m2/repository/
+
+# Logs
+*.log

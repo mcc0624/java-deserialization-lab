@@ -1,0 +1,15 @@
+.git
+.gitignore
+*.md
+Dockerfile*
+.dockerignore
+docker-compose.yml
+docker-compose.student.yml
+docker-reset-deploy.sh
+docker-build-push.sh
+node_modules
+target/
+*.ser
+*.class
+*.jar
+upload/

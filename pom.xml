@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.ctfstu</groupId>
+    <artifactId>java-deserialization-lab</artifactId>
+    <version>2.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>Java Deserialization Vulnerability Lab</name>
+
+    <modules>
+        <module>ser-common</module>
+        <module>class01-runtime</module>
+        <module>class02-unser</module>
+        <module>class03-unser-cmd</module>
+        <module>class04-unser-readobj</module>
+        <module>class07-invoker</module>
+        <module>class08-constant</module>
+        <module>class09-chained</module>
+        <module>class10-lazymap</module>
+        <module>class11-instantiate</module>
+        <module>class12-templates</module>
+        <module>class13-transformedmap</module>
+        <module>class14-cc1</module>
+        <module>class15-cc2</module>
+        <module>class16-cc3</module>
+        <module>class17-cc4</module>
+        <module>class18-cc5</module>
+        <module>class19-cc6</module>
+        <module>class20-cc7</module>
+    </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <servlet.api.version>4.0.1</servlet.api.version>
+        <commons.collections3.version>3.2.1</commons.collections3.version>
+        <commons.collections4.version>4.0</commons.collections4.version>
+        <commons.fileupload.version>1.3</commons.fileupload.version>
+        <commons.io.version>2.2</commons.io.version>
+        <javassist.version>3.29.2-GA</javassist.version>
+        <junit.version>5.9.1</junit.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Internal modules -->
+            <dependency>
+                <groupId>com.ctfstu</groupId>
+                <artifactId>ser-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Servlet API -->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>${servlet.api.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- Commons Collections 3.x -->
+            <dependency>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
+                <version>${commons.collections3.version}</version>
+            </dependency>
+
+            <!-- Commons Collections 4.x -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>${commons.collections4.version}</version>
+            </dependency>
+
+            <!-- Commons FileUpload -->
+            <dependency>
+                <groupId>commons-fileupload</groupId>
+                <artifactId>commons-fileupload</artifactId>
+                <version>${commons.fileupload.version}</version>
+            </dependency>
+
+            <!-- Commons IO -->
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons.io.version}</version>
+            </dependency>
+
+            <!-- Javassist -->
+            <dependency>
+                <groupId>org.javassist</groupId>
+                <artifactId>javassist</artifactId>
+                <version>${javassist.version}</version>
+            </dependency>
+
+            <!-- JUnit -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>3.3.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.1</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>
