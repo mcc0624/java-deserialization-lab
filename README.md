@@ -32,6 +32,8 @@ docker compose up -d
 | class02 | 基础反序列化 | readObject() 与 toString() 行为 |
 | class03 | 反序列化命令执行 | getter 方法触发命令执行 |
 | class04 | 自定义 readObject | 反序列化自动执行代码 |
+| class05 | 反射版 readObject | Class.forName + getMethod + invoke 替代直接 exec |
+| class06 | Javassist 字节码注入 | 运行时动态生成字节码，加载类触发静态块 |
 | class07 | InvokerTransformer | 反射调用任意方法 |
 | class08 | ConstantTransformer | 固定常量返回 |
 | class09 | ChainedTransformer | Transformer 链式调用 |

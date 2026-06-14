@@ -14,6 +14,10 @@ poc/
 │   │   └── Student.java
 │   ├── class04/GenPayload.java      # readObject() → 命令执行
 │   │   └── Student.java
+│   ├── class05/GenPayload.java      # 反射版 readObject（Class.forName → invoke）
+│   │   └── Student.java
+│   ├── class06/GenPayload.java      # Javassist 字节码注入
+│   │   └── Student.java
 │   ├── class07/GenPayload.java      # InvokerTransformer
 │   ├── class08/GenPayload.java      # ConstantTransformer
 │   ├── class09/GenPayload.java      # ChainedTransformer
@@ -83,6 +87,8 @@ bash ysoserial/class14-cc1/gen.sh id
 | 模块 | 依赖 |
 |------|------|
 | class02-04 | 无（标准库） |
+| class05 | 无（标准库 + 反射） |
+| class06 | javassist 3.29.2-GA |
 | class07-13 | commons-collections 3.2.1 |
 | class12 | + javassist 3.29.2-GA |
 | class14-20 | ysoserial（Docker 内运行） |
