@@ -19,6 +19,8 @@ COPY class01-runtime/pom.xml class01-runtime/
 COPY class02-unser/pom.xml class02-unser/
 COPY class03-unser-cmd/pom.xml class03-unser-cmd/
 COPY class04-unser-readobj/pom.xml class04-unser-readobj/
+COPY class05-reflection/pom.xml class05-reflection/
+COPY class06-javassist/pom.xml class06-javassist/
 COPY class07-invoker/pom.xml class07-invoker/
 COPY class08-constant/pom.xml class08-constant/
 COPY class09-chained/pom.xml class09-chained/
@@ -43,6 +45,8 @@ COPY class01-runtime/ class01-runtime/
 COPY class02-unser/ class02-unser/
 COPY class03-unser-cmd/ class03-unser-cmd/
 COPY class04-unser-readobj/ class04-unser-readobj/
+COPY class05-reflection/ class05-reflection/
+COPY class06-javassist/ class06-javassist/
 COPY class07-invoker/ class07-invoker/
 COPY class08-constant/ class08-constant/
 COPY class09-chained/ class09-chained/
@@ -83,6 +87,8 @@ COPY --from=builder /build/class01-runtime/target/class01.war /usr/local/tomcat/
 COPY --from=builder /build/class02-unser/target/class02.war /usr/local/tomcat/webapps/class02.war
 COPY --from=builder /build/class03-unser-cmd/target/class03.war /usr/local/tomcat/webapps/class03.war
 COPY --from=builder /build/class04-unser-readobj/target/class04.war /usr/local/tomcat/webapps/class04.war
+COPY --from=builder /build/class05-reflection/target/class05.war /usr/local/tomcat/webapps/class05.war
+COPY --from=builder /build/class06-javassist/target/class06.war /usr/local/tomcat/webapps/class06.war
 COPY --from=builder /build/class07-invoker/target/class07.war /usr/local/tomcat/webapps/class07.war
 COPY --from=builder /build/class08-constant/target/class08.war /usr/local/tomcat/webapps/class08.war
 COPY --from=builder /build/class09-chained/target/class09.war /usr/local/tomcat/webapps/class09.war

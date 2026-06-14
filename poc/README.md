@@ -1,58 +1,88 @@
 # Java 反序列化靶场 — POC 生成工具
 
+Maven 项目，导入 IntelliJ IDEA 即可使用。
+
 ## 目录结构
 
 ```
 poc/
-├── README.md
-├── lib/                          # 依赖 JAR
-│   ├── commons-collections-3.2.1.jar
-│   ├── commons-collections4-4.0.jar
-│   ├── javassist-3.29.2-GA.jar
-│   └── ysoserial.jar             # CC 链 payload 生成
-├── class02-unser/gen.sh          # 基础反序列化（Student.toString）
-├── class03-unser-cmd/gen.sh      # getName() → 命令执行
-├── class04-unser-readobj/gen.sh  # readObject() → 命令执行
-├── class07-invoker/gen.sh        # InvokerTransformer
-├── class08-constant/gen.sh       # ConstantTransformer
-├── class09-chained/gen.sh        # ChainedTransformer
-├── class10-lazymap/gen.sh        # LazyMap
-├── class11-instantiate/gen.sh    # InstantiateTransformer
-├── class12-templates/gen.sh      # TemplatesImpl (javassist)
-├── class13-transformedmap/gen.sh # TransformedMap
-├── class14-cc1/gen.sh ~ class20-cc7/gen.sh  # CC1~CC7 (ysoserial)
-├── gen_all.sh                    # 一键生成所有 payload
+├── pom.xml                          # Maven 项目配置
+├── src/main/java/
+│   ├── class02/GenPayload.java      # HashMap 反序列化（无需命令）
+│   │   └── Student.java             # 演示 toString 触发
+│   ├── class03/GenPayload.java      # getName() → 命令执行
+│   │   └── Student.java
+│   ├── class04/GenPayload.java      # readObject() → 命令执行
+│   │   └── Student.java
+│   ├── class07/GenPayload.java      # InvokerTransformer
+│   ├── class08/GenPayload.java      # ConstantTransformer
+│   ├── class09/GenPayload.java      # ChainedTransformer
+│   ├── class10/GenPayload.java      # LazyMap
+│   ├── class11/GenPayload.java      # InstantiateTransformer
+│   │   └── Student.java
+│   ├── class12/GenPayload.java      # TemplatesImpl (javassist)
+│   └── class13/GenPayload.java      # TransformedMap
+├── lib/                             # 本地 JAR（供 gen.sh 备用）
+├── ysoserial/                       # CC1-CC7 链（Docker 内生成）
+├── gen_all.sh                       # 一键生成所有 payload
+└── README.md
 ```
 
 ## 使用方法
 
-### 1. 生成单个模块的 payload
+### 在 IDEA 中
+
+1. **File → Open** → 选择 `poc/pom.xml` → 以项目打开
+2. IDEA 自动下载 Maven 依赖（commons-collections, javassist）
+3. 打开任意 `GenPayload.java` → 点击类名旁的 ▶ 绿色三角 → **Run**
+4. 生成的 `.ser` 文件在项目根目录 `poc/`
+
+### class12 特殊说明
+
+class12 (TemplatesImpl) 使用了 `com.sun.org.apache.xalan...` 内部类。
+如果在你的 JDK 上编译报错（`package com.sun.org.apache.xalan... is not visible`），在 IDEA 中：
+
+1. 打开 `class12/GenPayload.java`
+2. **File → Settings → Build, Execution, Deployment → Compiler → Java Compiler**
+3. 在 `Override compiler parameters per-module` 中为当前模块添加：
+   ```
+   --add-exports java.xml/com.sun.org.apache.xalan.internal.xsltc.trax=ALL-UNNAMED
+   --add-exports java.xml/com.sun.org.apache.xalan.internal.xsltc.runtime=ALL-UNNAMED
+   --add-opens java.xml/com.sun.org.apache.xalan.internal.xsltc.trax=ALL-UNNAMED
+   ```
+4. 或者在 **Run → Edit Configurations** → `VM options` 添加上述参数
+
+> 运行 `class12.GenPayload` 时也需要上述 `--add-exports` 和 `--add-opens` JVM 参数。
+
+### 在终端
 
 ```bash
-cd poc
-bash class02-unser/gen.sh    # 生成 class02 的 payload
-bash class12-templates/gen.sh # 生成 class12 的 payload
-```
+# 生成单个 payload
+mvn exec:java -Dexec.mainClass="class07.GenPayload"
 
-### 2. 生成所有模块的 payload
-
-```bash
-cd poc
+# 生成全部
 bash gen_all.sh
 ```
 
-### 3. 上传 payload 测试
-
-每个 `gen.sh` 会在当前目录生成对应的 `.ser` 文件，通过靶场页面上传到对应模块即可。
-
-或者用 curl：
-```bash
-curl -X POST -F "uploadFile=@class02.ser" http://localhost:81/class02/upload
-```
-
-### 4. class01 直接 curl 测试
+### 上传到靶场
 
 ```bash
-# 命令执行
-curl -X POST http://localhost:81/class01/execute -d "command=id"
+curl -X POST -F "uploadFile=@class07.ser" http://localhost:81/class07/upload
 ```
+
+### CC 链 (class14-20)
+
+CC1-CC7 利用 ysoserial 在 Docker 内生成（JDK 8 环境）：
+```bash
+bash ysoserial/class14-cc1/gen.sh id
+```
+或通过 `gen_all.sh` 一键生成。
+
+## 依赖说明
+
+| 模块 | 依赖 |
+|------|------|
+| class02-04 | 无（标准库） |
+| class07-13 | commons-collections 3.2.1 |
+| class12 | + javassist 3.29.2-GA |
+| class14-20 | ysoserial（Docker 内运行） |

