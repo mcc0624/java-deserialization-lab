@@ -26,6 +26,7 @@ poc/
 │   │   └── Student.java
 │   ├── class12/GenPayload.java      # TemplatesImpl (javassist)
 │   └── class13/GenPayload.java      # TransformedMap
+│   └── debug/DeserDebug.java       # 🆕 本地反序列化调试工具
 ├── lib/                             # 本地 JAR（供 gen.sh 备用）
 ├── ysoserial/                       # CC1-CC7 链（Docker 内生成）
 ├── gen_all.sh                       # 一键生成所有 payload
@@ -67,6 +68,73 @@ mvn exec:java -Dexec.mainClass="class07.GenPayload"
 # 生成全部
 bash gen_all.sh
 ```
+
+
+### 🐛 本地反序列化调试
+
+使用 DeserDebug 工具在本地直接反序列化 .ser 文件，无需上传到靶场：
+
+[[1;34mINFO[m] Scanning for projects...
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m----------------------< [0;36mcom.ctfstu:poc-generator[0;1m >----------------------[m
+[[1;34mINFO[m] [1mBuilding Java反序列化靶场 - POC生成器 1.0[m
+[[1;34mINFO[m]   from pom.xml
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mexec:3.6.3:java[m [1m(default-cli)[m @ [36mpoc-generator[0;1m ---[m
+[[1;33mWARNING[m] 
+[1;31mjava.lang.ClassNotFoundException[m: [1;31mdebug.DeserDebug[m
+    [1mat[m org.codehaus.mojo.exec.URLClassLoaderBuilder$ExecJavaClassLoader.loadClass ([1mURLClassLoaderBuilder.java:211[m)
+    [1mat[m java.lang.ClassLoader.loadClass ([1mClassLoader.java:490[m)
+    [1mat[m org.codehaus.mojo.exec.AbstractExecJavaBase.doExecClassLoader ([1mAbstractExecJavaBase.java:376[m)
+    [1mat[m org.codehaus.mojo.exec.AbstractExecJavaBase.lambda$execute$0 ([1mAbstractExecJavaBase.java:287[m)
+    [1mat[m java.lang.Thread.run ([1mThread.java:1474[m)
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;31mBUILD FAILURE[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  0.290 s
+[[1;34mINFO[m] Finished at: 2026-06-14T21:04:06-04:00
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;31mERROR[m] Failed to execute goal [32morg.codehaus.mojo:exec-maven-plugin:3.6.3:java[m [1m(default-cli)[m on project [36mpoc-generator[m: [1;31mAn exception occurred while executing the Java class. debug.DeserDebug[m -> [1m[Help 1][m
+[[1;31mERROR[m] 
+[[1;31mERROR[m] To see the full stack trace of the errors, re-run Maven with the [1m-e[m switch.
+[[1;31mERROR[m] Re-run Maven using the [1m-X[m switch to enable full debug logging.
+[[1;31mERROR[m] 
+[[1;31mERROR[m] For more information about the errors and possible solutions, please read the following articles:
+[[1;31mERROR[m] [1m[Help 1][m http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
+[[1;34mINFO[m] Scanning for projects...
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m----------------------< [0;36mcom.ctfstu:poc-generator[0;1m >----------------------[m
+[[1;34mINFO[m] [1mBuilding Java反序列化靶场 - POC生成器 1.0[m
+[[1;34mINFO[m]   from pom.xml
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mexec:3.6.3:java[m [1m(default-cli)[m @ [36mpoc-generator[0;1m ---[m
+[[1;33mWARNING[m] 
+[1;31mjava.lang.ClassNotFoundException[m: [1;31mdebug.DeserDebug[m
+    [1mat[m org.codehaus.mojo.exec.URLClassLoaderBuilder$ExecJavaClassLoader.loadClass ([1mURLClassLoaderBuilder.java:211[m)
+    [1mat[m java.lang.ClassLoader.loadClass ([1mClassLoader.java:490[m)
+    [1mat[m org.codehaus.mojo.exec.AbstractExecJavaBase.doExecClassLoader ([1mAbstractExecJavaBase.java:376[m)
+    [1mat[m org.codehaus.mojo.exec.AbstractExecJavaBase.lambda$execute$0 ([1mAbstractExecJavaBase.java:287[m)
+    [1mat[m java.lang.Thread.run ([1mThread.java:1474[m)
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;31mBUILD FAILURE[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  0.169 s
+[[1;34mINFO[m] Finished at: 2026-06-14T21:04:06-04:00
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;31mERROR[m] Failed to execute goal [32morg.codehaus.mojo:exec-maven-plugin:3.6.3:java[m [1m(default-cli)[m on project [36mpoc-generator[m: [1;31mAn exception occurred while executing the Java class. debug.DeserDebug[m -> [1m[Help 1][m
+[[1;31mERROR[m] 
+[[1;31mERROR[m] To see the full stack trace of the errors, re-run Maven with the [1m-e[m switch.
+[[1;31mERROR[m] Re-run Maven using the [1m-X[m switch to enable full debug logging.
+[[1;31mERROR[m] 
+[[1;31mERROR[m] For more information about the errors and possible solutions, please read the following articles:
+[[1;31mERROR[m] [1m[Help 1][m http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
+
+也可以在 IDEA 中直接运行 `debug/DeserDebug`，在 Program arguments 中填入 `.ser` 文件路径。
+
+> 调试工具使用与靶场完全相同的 ObjectInputStream 反序列化逻辑，
+> 可以单步跟踪 readObject 执行过程，理解漏洞触发原理。
 
 ### 上传到靶场
 
