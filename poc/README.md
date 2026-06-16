@@ -28,7 +28,10 @@ poc/
 │   └── class13/GenPayload.java      # TransformedMap
 │   └── debug/DeserDebug.java       # 🆕 本地反序列化调试工具
 ├── lib/                             # 本地 JAR（供 gen.sh 备用）
-├── ysoserial/                       # CC1-CC7 链（Docker 内生成）
+├── ysoserial/                       # CC1-CC7 链生成脚本（需 Docker 内运行）
+│   ├── class14-cc1/gen.sh
+│   ├── class15-cc2/gen.sh
+│   └── ...
 ├── gen_all.sh                       # 一键生成所有 payload
 └── README.md
 ```
@@ -45,19 +48,8 @@ poc/
 ### class12 特殊说明
 
 class12 (TemplatesImpl) 使用了 `com.sun.org.apache.xalan...` 内部类。
-如果在你的 JDK 上编译报错（`package com.sun.org.apache.xalan... is not visible`），在 IDEA 中：
-
-1. 打开 `class12/GenPayload.java`
-2. **File → Settings → Build, Execution, Deployment → Compiler → Java Compiler**
-3. 在 `Override compiler parameters per-module` 中为当前模块添加：
-   ```
-   --add-exports java.xml/com.sun.org.apache.xalan.internal.xsltc.trax=ALL-UNNAMED
-   --add-exports java.xml/com.sun.org.apache.xalan.internal.xsltc.runtime=ALL-UNNAMED
-   --add-opens java.xml/com.sun.org.apache.xalan.internal.xsltc.trax=ALL-UNNAMED
-   ```
-4. 或者在 **Run → Edit Configurations** → `VM options` 添加上述参数
-
-> 运行 `class12.GenPayload` 时也需要上述 `--add-exports` 和 `--add-opens` JVM 参数。
+`GenPayload.java` 已通过反射方式访问这些内部类，**无需** `--add-exports` 参数，
+在任何 JDK 版本上均可直接编译运行。
 
 ### 在终端
 

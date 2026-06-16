@@ -1,5 +1,6 @@
 package debug;
 
+import com.ctfstu.common.Logger;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 
@@ -22,6 +23,7 @@ import java.io.ObjectInputStream;
 public class DeserDebug {
 
     public static void main(String[] args) throws Exception {
+        Logger.setLogLevel(Logger.DEBUG);
         // ---- JDK 版本提示 ----
         String jdkVer = System.getProperty("java.version");
         boolean isJdk8 = jdkVer.startsWith("1.8");

@@ -7,25 +7,27 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 
+/**
+ * class18 — CC5 链（CommonsCollections5）
+ *
+ * 入口: BadAttributeValueExpException.readObject() → val.toString()
+ * 路径: TiedMapEntry → LazyMap → ChainedTransformer → InvokerTransformer → Runtime.exec()
+ *
+ * 过滤策略：阻止其他 CC 链的关键入口/桥接类
+ */
 @WebServlet("/upload")
 @MultipartConfig
 public class UploadHandler extends BaseFilteringUploadServlet {
     private static final long serialVersionUID = 1L;
 
     private static final String[] FORBIDDEN = {
+            // CC2 / CC4: 使用 collections4
             "org.apache.commons.collections4.",
+            // CC2 / CC3 / CC4: TemplatesImpl 字节码路径
             "com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl",
             "com.sun.org.apache.xalan.internal.xsltc.trax.TrAXFilter",
-            "com.mchange.v2.c3p0.PoolBackedDataSource",
-            "org.codehaus.groovy.runtime.MethodClosure",
-            "com.sun.rowset.JdbcRowSetImpl",
-            "org.springframework.aop.framework.AdvisedSupport",
-            "java.net.URL",
-            "bsh.Interpreter",
-            "clojure.lang.PersistentArrayMap",
-            "org.mozilla.javascript.NativeError",
-            "sun.rmi.server.UnicastRef",
-            "java.rmi.server.RemoteObject"
+            // CC7: Hashtable 入口
+            "java.util.Hashtable",
     };
 
     @Override
@@ -36,8 +38,13 @@ public class UploadHandler extends BaseFilteringUploadServlet {
     @Override
     protected void handleObject(Object obj, HttpServletRequest req,
                                  HttpServletResponse resp, StringBuilder html) throws Exception {
-        
-        // 🔒 顶层类型安全检查: 只允许 javax.management.BadAttributeValueExpException
+
+        // 🔒 顶层类型安全检查: 只允许 BadAttributeValueExpException
+        // 阻止 CC1（顶层 AnnotationInvocationHandler）、
+        //       CC2/CC4（顶层 PriorityQueue）、
+        //       CC3（顶层 AnnotationInvocationHandler）、
+        //       CC6（顶层 HashMap）、
+        //       CC7（顶层 Hashtable）
         if (!(obj instanceof javax.management.BadAttributeValueExpException)) {
             throw new SecurityException(
                 "拒绝反序列化: 仅允许 javax.management.BadAttributeValueExpException, 实际类型: " + obj.getClass().getName());

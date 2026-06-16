@@ -467,9 +467,9 @@
         <h2><i class="fas fa-exclamation-triangle" style="color:#f39c12;"></i> 注意事项</h2>
         <ul>
           <li>本环境仅用于授权安全学习，请勿用于非法用途</li>
-          <li>JDK 版本为 8u402，CC1/CC3 链因 <code>AnnotationInvocationHandler</code> 修复已失效</li>
-          <li>CC5 链需要 JDK 8 环境生成 payload（已提供 Docker 内生成脚本）</li>
-          <li>使用 TemplatesImpl 的题目需启用 <code>jdk.xml.enableTemplatesImplDeserialization=true</code></li>
+          <li>JDK 版本为 <strong>8u65</strong>（低于 8u71，CC1 链的 <code>AnnotationInvocationHandler</code> 仍可触发）</li>
+          <li>各 CC 链靶场（class14-20）设置了黑名单过滤，只允许对应的 CC 链 payload 通过</li>
+          <li>使用 TemplatesImpl 的靶场：JDK 8u65 默认可反序列化，无需额外 JVM 参数</li>
         </ul>
       </div>
 
@@ -587,13 +587,13 @@ rmiregistry 2099
     { num: '11', path: '/class11/', name: 'InstantiateTransformer', desc: '反射创建实例' },
     { num: '12', path: '/class12/', name: 'TemplatesImpl', desc: '字节码执行' },
     { num: '13', path: '/class13/', name: 'TransformedMap', desc: 'Map 变换触发' },
-    { num: '14', path: '/class14/', name: 'CC1 链', desc: 'CommonsCollections1' },
-    { num: '15', path: '/class15/', name: 'CC2 链', desc: 'CommonsCollections2' },
-    { num: '16', path: '/class16/', name: 'CC3 链', desc: 'CommonsCollections3' },
-    { num: '17', path: '/class17/', name: 'CC4 链', desc: 'CommonsCollections4' },
-    { num: '18', path: '/class18/', name: 'CC5 链', desc: 'CommonsCollections5' },
-    { num: '19', path: '/class19/', name: 'CC6 链', desc: 'CommonsCollections6' },
-    { num: '20', path: '/class20/', name: 'CC7 链', desc: 'CommonsCollections7' }
+    { num: '14', path: '/class14/', name: 'CC1 链', desc: 'AnnotationInvocationHandler + LazyMap → RCE，需 JDK ≤ 8u65' },
+    { num: '15', path: '/class15/', name: 'CC2 链', desc: 'PriorityQueue + TransformingComparator → TemplatesImpl' },
+    { num: '16', path: '/class16/', name: 'CC3 链', desc: 'AnnotationInvocationHandler + LazyMap → InstantiateTransformer → TemplatesImpl' },
+    { num: '17', path: '/class17/', name: 'CC4 链', desc: 'PriorityQueue + TransformingComparator → InstantiateTransformer → TemplatesImpl' },
+    { num: '18', path: '/class18/', name: 'CC5 链', desc: 'BadAttributeValueExpException → TiedMapEntry → LazyMap' },
+    { num: '19', path: '/class19/', name: 'CC6 链', desc: 'HashMap → TiedMapEntry → LazyMap → RCE' },
+    { num: '20', path: '/class20/', name: 'CC7 链', desc: 'Hashtable → LazyMap → RCE' }
   ];
 
   // ===== Render challenge grid =====

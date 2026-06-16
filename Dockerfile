@@ -75,6 +75,14 @@ RUN echo "==============================================" && \
     echo "  请勿在生产环境部署" && \
     echo "=============================================="
 
+# 覆写 JDK 为 8u65（CC1 链需要，AnnotationInvocationHandler 在 8u71 被修复）
+# 注意：jdk-8u65-linux-x64.tar.gz 需与 Dockerfile 同目录
+COPY jdk-8u65-linux-x64.tar.gz /tmp/
+RUN tar xzf /tmp/jdk-8u65-linux-x64.tar.gz -C /usr/local/ && \
+    rm -f /tmp/jdk-8u65-linux-x64.tar.gz
+ENV JAVA_HOME=/usr/local/jdk1.8.0_65
+ENV PATH=$JAVA_HOME/bin:$PATH
+
 # 删除 Tomcat 默认应用
 RUN rm -rf /usr/local/tomcat/webapps/ROOT \
            /usr/local/tomcat/webapps/docs \
@@ -106,6 +114,9 @@ COPY --from=builder /build/class20-cc7/target/class20.war /usr/local/tomcat/weba
 
 # 创建 ROOT webapp 作为首页（无需 Apache 反向代理）
 RUN mkdir /usr/local/tomcat/webapps/ROOT
+
+# 拷贝 ysoserial 到容器（供 CC 链 payload 生成）
+COPY poc/lib/ysoserial.jar /tmp/ysoserial.jar
 COPY landing/index.html /usr/local/tomcat/webapps/ROOT/index.html
 
 # 启用 TemplatesImpl 反序列化

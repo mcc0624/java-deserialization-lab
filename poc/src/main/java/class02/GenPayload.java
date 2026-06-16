@@ -3,6 +3,7 @@ package class02;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
+import com.ctfstu.common.Logger;
 
 /**
  * 生成 class02 的 payload — 基础反序列化
@@ -13,6 +14,7 @@ import java.util.HashMap;
  */
 public class GenPayload {
     public static void main(String[] args) throws Exception {
+        Logger.setLogLevel(Logger.DEBUG);
         HashMap<String, String> map = new HashMap<>();
         map.put("msg", "反序列化成功！");
 

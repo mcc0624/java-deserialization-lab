@@ -3,6 +3,7 @@ package class11;
 import org.apache.commons.collections.functors.InstantiateTransformer;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
+import com.ctfstu.common.Logger;
 
 /**
  * 生成 class11 的 payload — InstantiateTransformer
@@ -12,6 +13,7 @@ import java.io.ObjectOutputStream;
  */
 public class GenPayload {
     public static void main(String[] args) throws Exception {
+        Logger.setLogLevel(Logger.DEBUG);
         InstantiateTransformer inst = new InstantiateTransformer(
                 new Class[]{String.class, Integer.TYPE},
                 new Object[]{"id", 18});
