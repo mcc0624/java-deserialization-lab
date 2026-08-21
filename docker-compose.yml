@@ -1,14 +1,13 @@
-# ============================================================
-# Java 反序列化靶场 — Docker Compose 部署文件
+﻿# ============================================================
+# Java 反序列化靶场 — 一键部署文件
 # 用法: docker compose up -d
 # 访问: http://localhost:81
+#
+# 镜像已预构建并推送到阿里云 ACR，无需本地编译
 # ============================================================
 services:
-  # ============================================================
-  # Tomcat 应用服务器 — 运行所有靶场模块 + 首页
-  # ============================================================
   javaser-apps:
-    build: .
+    image: crpi-4exq63xzgbecpu58.cn-chengdu.personal.cr.aliyuncs.com/mcc0624/java-deserialization-lab:latest
     container_name: javaserial-lab
     ports:
       - "81:8080"

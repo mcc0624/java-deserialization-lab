@@ -1,43 +1,41 @@
 #!/bin/bash
 set -euo pipefail
 
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
+RED='\e[0;31m'
+GREEN='\e[0;32m'
+YELLOW='\e[1;33m'
+NC='\e[0m'
 
 check_docker() {
     if ! docker info >/dev/null 2>&1; then
-        echo -e "${RED}[错误] Docker 未运行${NC}"
+        echo -e "[错误] Docker 未运行"
         exit 1
     fi
     if ! docker compose version >/dev/null 2>&1; then
-        echo -e "${RED}[错误] 需要 Docker Compose${NC}"
+        echo -e "[错误] 需要 Docker Compose"
         exit 1
     fi
 }
 
 main() {
-    echo -e "${GREEN}=============================================${NC}"
-    echo -e "${GREEN}  Java 反序列化靶场 — 一键部署脚本${NC}"
-    echo -e "${GREEN}=============================================${NC}"
+    echo -e "============================================="
+    echo -e "  Java 反序列化靶场 — 一键部署脚本"
+    echo -e "============================================="
 
     check_docker
 
-    echo -e "\n${YELLOW}[1/3] 构建镜像...${NC}"
-    docker compose build --no-cache 2>&1 | tail -3
+    echo -e "\n[1/2] 拉取镜像..."
+    docker compose pull
 
-    echo -e "\n${YELLOW}[2/3] 停止旧容器...${NC}"
+    echo -e "\n[2/2] 启动服务..."
     docker compose down 2>/dev/null || true
-
-    echo -e "\n${YELLOW}[3/3] 启动服务...${NC}"
     docker compose up -d
 
-    echo -e "\n${GREEN}=============================================${NC}"
-    echo -e "${GREEN}  ✅ 部署完成！${NC}"
-    echo -e "${GREEN}  访问 http://localhost:81 进入靶场${NC}"
-    echo -e "${GREEN}=============================================${NC}"
-    echo -e "\n${YELLOW}等待服务启动...${NC}"
+    echo -e "\n============================================="
+    echo -e "  ✅ 部署完成！"
+    echo -e "  访问 http://localhost:81 进入靶场"
+    echo -e "============================================="
+    echo -e "\n等待服务启动..."
     sleep 3
     docker compose ps
 }
