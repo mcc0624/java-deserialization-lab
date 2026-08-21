@@ -13,7 +13,7 @@
 
 ### 部署命令
 
-`ash
+`ash
 # 方式一：使用部署脚本（推荐）
 chmod +x deploy.sh && ./deploy.sh
 
@@ -36,7 +36,7 @@ docker run -d -p 81:8080 --name javaserial-lab \
 
 如需从源码自行构建镜像：
 
-`ash
+`ash
 # 1. 确保已准备以下文件（与 Dockerfile 同目录）：
 #    - jdk-8u65-linux-x64.tar.gz（CC1 链需要 JDK 8u65）
 #    - poc/lib/ysoserial.jar（payload 生成工具）
@@ -95,7 +95,7 @@ docker compose up -d
 
 使用 ysoserial 生成 payload 并上传到各模块测试反序列化漏洞。ysoserial.jar 已内置到 Docker 容器 /tmp/ysoserial.jar：
 
-`ash
+`ash
 # 生成 CC1 payload
 docker exec javaserial-lab java -jar /tmp/ysoserial.jar CommonsCollections1 "id" > cc1.ser
 
@@ -125,7 +125,7 @@ crpi-4exq63xzgbecpu58.cn-chengdu.personal.cr.aliyuncs.com/mcc0624/java-deseriali
 
 如需推送更新，使用 docker-build-push.sh：
 
-`ash
+`ash
 chmod +x docker-build-push.sh
 ./docker-build-push.sh v1.0
 `
